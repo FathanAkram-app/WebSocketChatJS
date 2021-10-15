@@ -11,30 +11,36 @@ function App() {
   const [ws, setWS] = useState()
   
   
-    
+  
   return (
     <div className="App">
       <body>
-      {loggedin ? null : <button onClick={()=>connectWebSocket(setLoggedin,setMessages,setUsername,setWS,messages)}>Login</button>}
-      <div class="space-y-4">
+      {loggedin ? null : <button class="border" onClick={()=>connectWebSocket(setLoggedin,setMessages,setUsername,setWS,messages)}>Login</button>}
+      <div class="space-y-4 content-start items-start	">
+        
         {
-          console.log(messages)
+          messages.map(element => {
+            return <p>{element.username+(element.username != "" ? " : " : "")+element.message}</p>
+          })
         }
-          
+        
       </div>
-      <div class="content-start">
-        <input class="border" onChange={(e)=>{
-          setChat(e.target.value)
-        }}></input>
-        <button class="border" onClick={()=>{
-          ws.send(JSON.stringify({
-            type: "chat",
-            username: username,
-            message: chat,
-            time: Date.UTC()
-        }))
-        }}>send</button>
-      </div>
+      {loggedin ?
+        <div class="content-start">
+          <input class="border" onChange={(e)=>{
+            setChat(e.target.value)
+          }}></input>
+          <button class="border" onClick={()=>{
+            ws.send(JSON.stringify({
+              type: "chat",
+              username: username,
+              message: chat,
+              time: Date.UTC()
+          }))
+          }}>send</button>
+        </div>
+      : null
+      }
       
       </body>
       
@@ -56,11 +62,11 @@ function connectWebSocket(setLoggedin,setMessages,setUsername, setWS, messages) 
           username: username
         }))
         ws.addEventListener("message", ({data}) => {
+          
           const res = JSON.parse(data)
           
           if (res.type == "chat"){
-            setMessages(res)
-            console.log(res.message)
+            setMessages(res.data)
           }
         })
       })

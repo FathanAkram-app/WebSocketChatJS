@@ -22,7 +22,6 @@ wss.on("connection", ws => {
             let username = res.username
             usernames.push(username)
             const message = {
-                type: "chat",
                 username: "",
                 message: username + " has connected to the server",
                 time: Date.UTC()
@@ -31,24 +30,27 @@ wss.on("connection", ws => {
             
             console.log("Online : " + usernames)
             messages.push(message)
-            wss.broadcast(JSON.stringify(message))
+            wss.broadcast(JSON.stringify({
+                type:"chat",
+                data: messages
+            }))
         }else if (res.type == "chat") {
             const message = {
-                type: "chat",
                 username: res.username,
                 message: res.message,
                 time: Date.UTC()
+                
             }
             messages.push(message)
             console.log(messages)
-            wss.broadcast(JSON.stringify(messages))
+            wss.broadcast(JSON.stringify({
+                type:"chat",
+                data:messages
+            }))
             
         }
 
     })
-
-    
-    
 
     ws.on("close", ()=>{
         console.log("Client disconnected")
